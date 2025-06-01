@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Quiz App</h1>
+    <div id="timer">Time Left: <span id="time">1:30</span></div>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    {% if submitted %}
+        <h2>Your Score: {{ score }}/{{ questions|length }}</h2>
+    {% else %}
+    <form method="post">
+        {% for q in questions %}
+        <div class="question">
+            <p><strong>Q{{ loop.index }}:</strong> {{ q.question }}</p>
+            {% for option in q.options %}
+                <label>
+                    <input type="radio" name="q{{ loop.index0 }}" value="{{ option }}" required>
+                    {{ option }}
+                </label><br>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+    {% endif %}
+</div>
+<script>
+    let timeLeft = 90;
+    const timerDisplay = document.getElementById('time');
+    const progressBar = document.getElementById('progress-bar');
+    const form = document.querySelector("form");
+
+    const timer = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            form.submit();
+        } else {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            progressBar.style.width = `${(timeLeft / 90) * 100}%`;
+        }
+    }, 1000);
+</script>
+</body>
+</html>
